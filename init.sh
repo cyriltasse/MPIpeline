@@ -16,6 +16,7 @@ fi
 export DDF_LOCAL_DEV=1
 export DDF_PIPELINE_CATALOGS=/home/$USER/CATALOGS
 
+
 export OPENBLAS_NUM_THREADS=1
 export OPENBLAS_MAX_THREADS=1
 #export TMPDIR=/data/cyril.tasse/'tmp'
