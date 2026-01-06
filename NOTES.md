@@ -10,7 +10,7 @@ python3.9 -m venv venv
 source venv/bin/activate
 export VE_FOLDER=$PWD/MPIpeline/venv
 
-mkdir -p pip-cache pip
+mkdir -p pip-cache pip-tmp
 export PIP_CACHE_DIR="$PWD/pip-cache"
 export TMPDIR="$PWD/pip-tmp"
 pip install --upgrade pip
