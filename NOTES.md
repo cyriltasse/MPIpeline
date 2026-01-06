@@ -23,6 +23,8 @@ EOF
 )"
 pip install sharedarray==3.2.1
 
+mkdir sources
+cd $VE_FOLDER/../sources
 git clone https://github.com/sailfishos-mirror/readline.git
 cd readline/
 ./configure --prefix=$VE_FOLDER
