@@ -2,8 +2,9 @@
 
 
 export DEVDIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-echo $DEVDIR
-. $DEVDIR/venv/bin/activate
+echo DEVDIR: $DEVDIR
+export VE_FOLDER=$DEVDIR/venv
+. $VE_FOLDER/bin/activate
 
 
 if [ ! -d "$DEVDIR" ];
@@ -12,8 +13,9 @@ then
     return
 fi
 
+export DDF_LOCAL_DEV=1
+export DDF_PIPELINE_CATALOGS=/home/$USER/CATALOGS
 
-export VE_FOLDER=$DEVDIR
 export OPENBLAS_NUM_THREADS=1
 export OPENBLAS_MAX_THREADS=1
 #export TMPDIR=/data/cyril.tasse/'tmp'
@@ -24,8 +26,7 @@ export PYTHONHASHSEED=0
 
 export THIS_USER
 THIS_USER=$USER
-#export DDF_PIPELINE_CATALOGS=/home/cyril.tasse/CATALOGS
-export KILLMS_DIR=$VE_FOLDER
+export KILLMS_DIR=$DEVDIR
 export DDFACET_DIR=$KILLMS_DIR
 export DDF_DIR=$DDFACET_DIR
 echo -e Source directory for killMS: $BLEU $KILLMS_DIR $NORMAL

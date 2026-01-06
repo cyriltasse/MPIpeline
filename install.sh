@@ -22,8 +22,11 @@ done
 echo using $PYTHON
 
 
-python3.8 -m venv venv
+$PYTHON -m venv venv
 source venv/bin/activate
+
+module load openmpi-4.1.6
+
 mkdir -p pip-cache pip
 export PIP_CACHE_DIR="$PWD/pip-cache"
 export TMPDIR="$PWD/pip-tmp"
