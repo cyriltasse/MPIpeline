@@ -32,8 +32,6 @@ export PIP_CACHE_DIR="$PWD/pip-cache"
 export TMPDIR="$PWD/pip-tmp"
 pip install --upgrade pip
 
-
-
 pip install numpy==1.22.4
 export CFLAGS="-I$(python - <<'EOF'
 import numpy
@@ -41,6 +39,7 @@ print(numpy.get_include())
 EOF
 )"
 pip install sharedarray==3.2.1
+
 pip install python-casacore
 
 export DDFACET_BRANCH=MassiveMerge_PR_MergeSSD3_NancepMPI
