@@ -70,6 +70,7 @@ make -j 10
 make install
 cd ../..
 
+cd $VE_FOLDER/../sources
 export DDFACET_BRANCH=MassiveMerge_PR_MergeSSD3_NancepMPI
 export KMS_BRANCH=APP_Predict_Compress_PolSmooth_HybridSM_OpFit_MultiField_MPI_MultiChain
 export DDFPIPE_BRANCH=Hackaton_mpipool_test_NancepMPI
