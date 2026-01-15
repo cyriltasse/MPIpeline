@@ -71,9 +71,9 @@ make install
 cd ../..
 
 cd $VE_FOLDER/../sources
-export DDFACET_BRANCH=MassiveMerge_PR_MergeSSD3_NancepMPI
+export DDFACET_BRANCH=MassiveMerge_PR_MergeSSD3_NancepMPI_APP
 export KMS_BRANCH=APP_Predict_Compress_PolSmooth_HybridSM_OpFit_MultiField_MPI_MultiChain
-export DDFPIPE_BRANCH=Hackaton_mpipool_test_NancepMPI
+export DDFPIPE_BRANCH=Hackaton_mpipool_test_NancepMPI_Herts
 
 git clone -b $DDFACET_BRANCH git@github.com:cyriltasse/DDFacet.git
 pip install -e ./DDFacet[mpi-support]
