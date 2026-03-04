@@ -8,6 +8,13 @@ if ! command -v uv; then
     curl -LsSf https://astral.sh/uv/install.sh | sh
 fi
 
+#export DDFACET_BRANCH=MassiveMerge_PR_MergeSSD3_NancepMPI
+#export KMS_BRANCH=APP_Predict_Compress_PolSmooth_HybridSM_OpFit_MultiField_MPI_MultiChain
+#export DDFPIPE_BRANCH=Hackaton_mpipool_test_NancepMPI
+git clone https://github.com/cyriltasse/DDFacet -b MassiveMerge_PR_MergeSSD3_NancepMPI  ../DDFacet || true
+git clone https://github.com/cyriltasse/killMS -b APP_Predict_Compress_PolSmooth_HybridSM_OpFit_MultiField_MPI_MultiChain ../killMS || true
+git clone https://github.com/dguibert/ddf-pipeline i-b Hackaton_mpipool_test_NancepMPI_Herts ../ddf-pipeline || true
+
 if test -z "${VIRTUAL_ENV:-}"; then
     export UV_CACHE_DIR=$PWD/../uv-cache
     # create venv if not exists yet
@@ -18,7 +25,7 @@ if test -z "${VIRTUAL_ENV:-}"; then
     source venv/bin/activate
     (
     cd ../ddf-pipeline
-    uv sync --extra mpi-support --frozen --active
+    uv sync --extra mpi-support --frozen --active --verbose
     )
 fi
 
@@ -39,8 +46,11 @@ export CASACORE_DATA=$PWD/casacore_data
 export CFLAGS="-I$(python -c "import numpy; print(numpy.get_include())")"
 python_version=$(python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
 python_version_long=$(python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}')")
+# -c 'import sysconfig; print(sysconfig.get_config_h_filename())'
+#                                                /home_nfs/users/bguibertd/.local/share/uv/python/cpython-3.10.19-linux-x86_64-gnu/include/python3.10/pyconfig.h
+#                                                /home_nfs/projects/pro_2020_ska/bguibertd/MPIpeline/venv/include/home_nfs/users/bguibertd/.local/share/uv/python/cpython-3.10.19-linux-x86_64-gnu/include/python3.1
 export CPLUS_INCLUDE_PATH="${CPLUS_INCLUDE_PATH:+CPLUS_INCLUDE_PATH:}$HOME/.local/share/uv/python/cpython-${python_version_long}-linux-x86_64-gnu/include/python${python_version}"
-export CPLUS_INCLUDE_PATH="$VIRTUAL_ENV/include${CPLUS_INCLUDE_PATH:-:CPLUS_INCLUDE_PATH:}"
+export CPLUS_INCLUDE_PATH="$VIRTUAL_ENV/include:$CPLUS_INCLUDE_PATH"
 
 cd /dev/shm
 mkdir -p sources
@@ -120,7 +130,7 @@ rm -rf cbuild
 mkdir -p cbuild
 cd cbuild
 cmake -DCMAKE_INSTALL_PREFIX=$VIRTUAL_ENV -DBUILD_PYTHON=OFF -DBUILD_PYTHON3=ON -DBUILD_TESTING=OFF -DDATA_DIR=/home/$USER/casacore_data -DBOOST_ROOT=$VIRTUAL_ENV -Dboost_python310_DIR=$VIRTUAL_ENV -DCMAKE_VERBOSE_MAKEFILE=ON ..
-make #-j $(nproc)
+make -j $(nproc)
 make install
 )
 
@@ -138,10 +148,18 @@ git clone -b NoBoost https://github.com/cyriltasse/LOFARBeam.git || true
 mkdir -p LOFARBeam/build
 cd LOFARBeam/build
 cmake -DCMAKE_INSTALL_PREFIX=$VIRTUAL_ENV ..
-make -j 10
+make -j $(nproc)
 make install
 )
 
-#export DDFACET_BRANCH=MassiveMerge_PR_MergeSSD3_NancepMPI
-#export KMS_BRANCH=APP_Predict_Compress_PolSmooth_HybridSM_OpFit_MultiField_MPI_MultiChain
-#export DDFPIPE_BRANCH=Hackaton_mpipool_test_NancepMPI
+tree && (
+    git clone https://github.com/aroffringa/dysco.git || true
+     cd dysco
+     mkdir build && cd build
+     cmake -DCMAKE_INSTALL_PREFIX=$VIRTUAL_ENV \
+       -DPYTHON_EXECUTABLE=$VIRTUAL_ENV/bin/python \
+       -DPYTHON_INSTALL_DIR=$VIRTUAL_ENV/lib/python3.10/site-packages \
+       ..
+     make -j $(nproc)
+     make install
+)
