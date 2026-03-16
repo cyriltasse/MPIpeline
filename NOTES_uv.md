@@ -8,12 +8,20 @@ if ! command -v uv; then
     curl -LsSf https://astral.sh/uv/install.sh | sh
 fi
 
-#export DDFACET_BRANCH=MassiveMerge_PR_MergeSSD3_NancepMPI
-#export KMS_BRANCH=APP_Predict_Compress_PolSmooth_HybridSM_OpFit_MultiField_MPI_MultiChain
-#export DDFPIPE_BRANCH=Hackaton_mpipool_test_NancepMPI
-git clone https://github.com/cyriltasse/DDFacet -b MassiveMerge_PR_MergeSSD3_NancepMPI  ../DDFacet || true
+
+# download DDFacet/killMS and ddf-pipeline
+
+git clone https://github.com/cyriltasse/DDFacet -b MassiveMerge_PR_MergeSSD3_NancepMPI_APP  ../DDFacet || true
 git clone https://github.com/cyriltasse/killMS -b APP_Predict_Compress_PolSmooth_HybridSM_OpFit_MultiField_MPI_MultiChain ../killMS || true
-git clone https://github.com/dguibert/ddf-pipeline i-b Hackaton_mpipool_test_NancepMPI_Herts ../ddf-pipeline || true
+git clone https://github.com/dguibert/ddf-pipeline -b Hackaton_mpipool_test_NancepMPI_Herts ../ddf-pipeline || true
+
+# on Adastra
+
+module load gsl
+export CC=gcc
+export CXX=g++
+
+# load and create the virtual environment
 
 if test -z "${VIRTUAL_ENV:-}"; then
     export UV_CACHE_DIR=$PWD/../uv-cache
@@ -25,12 +33,16 @@ if test -z "${VIRTUAL_ENV:-}"; then
     source venv/bin/activate
     (
     cd ../ddf-pipeline
-    uv sync --extra mpi-support --frozen --active --verbose
+    uv pip install setuptools==70 wheel
+    uv pip install astlib==v0.11.00 --no-build-isolation
+    uv sync --extra mpi-support --refresh-package ddfacet --refresh-package killms --active --verbose
     )
 fi
 
 test -n "$VIRTUAL_ENV" || ( echo "ERROR: load the venv first"; exit 1)
 export SCRIPT_DIR=$(readlink -f $(dirname $0))
+
+# install other dependencies
 
 if ! test -d casacore_data; then
     (
@@ -47,12 +59,10 @@ export CFLAGS="-I$(python -c "import numpy; print(numpy.get_include())")"
 python_version=$(python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
 python_version_long=$(python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}.{sys.version_info.micro}')")
 # -c 'import sysconfig; print(sysconfig.get_config_h_filename())'
-#                                                /home_nfs/users/bguibertd/.local/share/uv/python/cpython-3.10.19-linux-x86_64-gnu/include/python3.10/pyconfig.h
-#                                                /home_nfs/projects/pro_2020_ska/bguibertd/MPIpeline/venv/include/home_nfs/users/bguibertd/.local/share/uv/python/cpython-3.10.19-linux-x86_64-gnu/include/python3.1
 export CPLUS_INCLUDE_PATH="${CPLUS_INCLUDE_PATH:+CPLUS_INCLUDE_PATH:}$HOME/.local/share/uv/python/cpython-${python_version_long}-linux-x86_64-gnu/include/python${python_version}"
 export CPLUS_INCLUDE_PATH="$VIRTUAL_ENV/include:$CPLUS_INCLUDE_PATH"
 
-cd /dev/shm
+#cd /dev/shm
 mkdir -p sources
 cd sources
 
@@ -63,7 +73,6 @@ cd readline/
 make -j $(nproc)
 make install
 )
-
 
 true && (
     curl -O -L -C- https://archives.boost.io/release/1.74.0/source/boost_1_74_0.tar.gz
